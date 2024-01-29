@@ -17,6 +17,7 @@ class MainApplication:
         self.root = root
         self.root.title("Mailytics")
         self.email_client = EmailClient('imap.gmail.com', 'user@example.com', os.getenv("MAILPASSWORD"))
+        self.selected_emails = []
         self.initialize_ui()
 
     def initialize_ui(self):
@@ -55,6 +56,9 @@ class MainApplication:
         self.email_client = EmailClient('imap.one.com', 'buchhaltung@duve-lc.ch', os.getenv("MAILPASSWORD"))
         self.populate_folders()
 
+        self.email_list.bind('<<TreeviewSelect>>', self.on_email_select)
+
+
     def populate_folders(self):
         try:
             self.email_client.connect()
@@ -75,6 +79,16 @@ class MainApplication:
     def on_folder_select(self, event):
         selected_folder = self.folder_list.item(self.folder_list.selection()[0])['text']
         self.populate_emails(selected_folder)
+
+    def on_email_select(self, event):
+        selected_items = self.email_list.selection()
+        self.selected_emails.clear()  # Clear previously selected emails
+        
+        for item in selected_items:
+            email_id = self.email_list.item(item)['text']
+            email_body = self.email_client.fetch_email_body(email_id)  # Implement this in EmailClient
+            self.selected_emails.append(email_body)
+        print(self.selected_emails)
 
 
 def main():

@@ -1,0 +1,7 @@
+To Do list:
+
+- selected folders add up in list, need check not to duplicate mails.
+- selected emails only append once to list, list seems te be getting emptied after each click.
+- add a button to remove selected mails from list.
+- how to select several mails at once, so that langchain can loop through them. 
+- require cleaning of emails to remove hyperlinks, email adresses, graphics, etc. so that only relevant text remains.

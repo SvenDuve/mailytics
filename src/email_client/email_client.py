@@ -57,6 +57,19 @@ class EmailClient:
                         'date': msg['date']
                     })
         return emails
+    
+    def fetch_email_body(self, email_id):
+        typ, msg_data = self.connection.fetch(email_id, '(RFC822)')
+        for response_part in msg_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        if part.get_content_type() == "text/plain":
+                            return part.get_payload(decode=True).decode()
+                else:
+                    return msg.get_payload(decode=True).decode()
+        return ""
 
 
     def disconnect(self):
