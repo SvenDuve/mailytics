@@ -1,6 +1,8 @@
 import imaplib
 import email
 
+
+
 class EmailClient:
     def __init__(self, server, email, password):
         self.server = server
@@ -36,6 +38,25 @@ class EmailClient:
                 print("Error processing line:", line, "; Error:", e)
                 continue
         return folders
+    
+    def select_folder(self, folder_name):
+        self.connection.select(f'"{folder_name}"')
+
+    def fetch_emails(self, limit=10):  # You can set a limit to the number of emails fetched
+        emails = []
+        typ, data = self.connection.search(None, 'ALL')
+        for num in data[0].split()[-limit:]:
+            typ, msg_data = self.connection.fetch(num, '(RFC822)')
+            for response_part in msg_data:
+                if isinstance(response_part, tuple):
+                    msg = email.message_from_bytes(response_part[1])
+                    emails.append({
+                        'id': num.decode(),
+                        'from': msg['from'],
+                        'subject': msg['subject'],
+                        'date': msg['date']
+                    })
+        return emails
 
 
     def disconnect(self):
